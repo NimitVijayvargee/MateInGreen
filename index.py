@@ -50,6 +50,41 @@ def render_piece(position, piece_type):
 images = load_images()
 
 
+def find_king_position(color):
+    king_square = board.king(color)
+    if king_square is not None:
+        return chess.square_name(king_square)
+    return None
+
+
+def is_in_check_or_checkmate():
+    color = board.turn
+    king_position = find_king_position(color)
+
+    if king_position:
+        if board.is_check():
+            if board.is_checkmate():
+                print(f"Checkmate! {chess.COLOR_NAMES[color]} king at {king_position}")
+                pygame.quit()
+                sys.exit()
+
+            else:
+                pygame.draw.rect(
+                    screen,
+                    (240, 120, 120),
+                    (
+                        (board.king(color) % 8) * SQUARE_SIZE + OFFSET,
+                        (7 - (board.king(color) // 8)) * SQUARE_SIZE + OFFSET,
+                        SQUARE_SIZE,
+                        SQUARE_SIZE,
+                    ),
+                )
+        else:
+            print(f"King is safe at {king_position}")
+    else:
+        print(f"King not found on the board.")
+
+
 def render_board_from_fen(fen):
     piece_mapping = {
         "r": ("b", "r"),
@@ -75,6 +110,35 @@ def render_board_from_fen(fen):
             else:
                 render_piece((row_idx, col_idx), piece_mapping[char])
                 col_idx += 1
+
+
+def highlight_legal_moves(screen, board, selected_square, SQUARE_SIZE, OFFSET):
+    """Highlights all legal moves for the piece at the selected square."""
+    legal_moves = board.legal_moves
+    selected_piece_square = chess.square(selected_square[1], 7 - selected_square[0])
+
+    # Iterate over all legal moves
+    for move in legal_moves:
+        if move.from_square == selected_piece_square:
+            # Get the destination square
+            dest_square = move.to_square
+
+            # Calculate the row and column for the destination square
+            col = chess.square_file(dest_square)
+            row = 7 - chess.square_rank(dest_square)
+
+            # Draw a circle at the center of the square to highlight the legal move
+            pygame.draw.circle(
+                screen,
+                (50, 205, 50),
+                (
+                    col * SQUARE_SIZE + OFFSET + SQUARE_SIZE // 2,
+                    row * SQUARE_SIZE + OFFSET + SQUARE_SIZE // 2,
+                ),
+                SQUARE_SIZE * 0.3,
+            )
+
+    pygame.display.update()
 
 
 selected_square = (-1, -1)
@@ -118,6 +182,9 @@ while running:
                                 SQUARE_SIZE,
                             ),
                         )
+                        highlight_legal_moves(
+                            screen, board, selected_square, SQUARE_SIZE, OFFSET
+                        )
                     pygame.display.update()
                 else:
                     rank, file = selected_square
@@ -127,6 +194,8 @@ while running:
                     if move in board.legal_moves:
                         board.push(move)
                         draw_chessboard()
+                        is_in_check_or_checkmate()
+
                     else:
                         print("illegal move")
 
@@ -142,6 +211,7 @@ while running:
                         ),
                     )
                     selected_square = (-1, -1)
+
             print(f"Clicked at row {row}, col {col}!")
 
         if event.type == pygame.QUIT:

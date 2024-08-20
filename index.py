@@ -4,11 +4,7 @@ import functions as f
 pygame.init()
 
 
-
-
 images = f.load_images()
-
-
 
 
 selected_square = (-1, -1)
@@ -17,6 +13,11 @@ running = True
 f.draw_chessboard()
 while running:
     f.render_board_from_fen(f.board.fen())
+    if f.board.turn == chess.BLACK:
+        move = next(iter(f.board.legal_moves))
+        f.board.push(move)
+        f.draw_chessboard()
+        f.is_in_check_or_checkmate()
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -27,15 +28,10 @@ while running:
 
             if 0 <= col < f.COLS and 0 <= row < f.ROWS:
                 if selected_square == (-1, -1):
-
                     selected_square = (row, col)
                     selected_piece = f.board.piece_at(chess.square(col, 7 - row))
                     if (
                         (
-                            str(selected_piece).lower() == str(selected_piece)
-                            and f.board.turn == chess.BLACK
-                        )
-                        or (
                             str(selected_piece).upper() == str(selected_piece)
                             and f.board.turn == chess.WHITE
                         )
@@ -67,7 +63,7 @@ while running:
                         f.is_in_check_or_checkmate()
 
                     else:
-                        print("illegal move")
+                        selected_square = (-1, -1)
 
                     color = f.WHITE if (row + col) % 2 == 0 else f.BLACK
                     pygame.draw.rect(

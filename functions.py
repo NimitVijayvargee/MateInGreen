@@ -10,6 +10,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess Board")
 board = chess.Board()
 
+
 def load_images():
     pieces = ["wp", "wr", "wn", "wb", "wq", "wk", "bp", "br", "bn", "bb", "bq", "bk"]
     images = {}
@@ -17,7 +18,10 @@ def load_images():
         images[piece] = pygame.image.load(f"assets/{piece}.png")
     return images
 
+
 images = load_images()
+
+
 def draw_chessboard():
     screen.fill(WHITE)
     pygame.draw.rect(screen, BLACK, (70, 70, 660, 660))
@@ -125,7 +129,7 @@ def highlight_legal_moves(screen, board, selected_square, SQUARE_SIZE, OFFSET):
             )
 
     pygame.display.update()
-    
+
 
 if __name__ == "__main__":
     import index

@@ -15,9 +15,7 @@ while running:
     f.render_board_from_fen(f.board.fen())
     if f.board.turn == chess.BLACK:
         move = next(iter(f.board.legal_moves))
-        f.board.push(move)
-        f.draw_chessboard()
-        f.is_in_check_or_checkmate()
+        f.try_and_push_move(move)
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -57,12 +55,7 @@ while running:
                     move = chess.Move(
                         chess.square(file, 7 - rank), chess.square(col, 7 - row)
                     )
-                    if move in f.board.legal_moves:
-                        f.board.push(move)
-                        f.draw_chessboard()
-                        f.is_in_check_or_checkmate()
-
-                    else:
+                    if not f.try_and_push_move(move):
                         selected_square = (-1, -1)
 
                     color = f.WHITE if (row + col) % 2 == 0 else f.BLACK

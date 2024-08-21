@@ -22,7 +22,7 @@ def load_images():
 images = load_images()
 
 
-def draw_chessboard():
+def draw_chessboard() -> None:
     screen.fill(WHITE)
     pygame.draw.rect(screen, BLACK, (70, 70, 660, 660))
     for row in range(ROWS):
@@ -40,21 +40,21 @@ def draw_chessboard():
             )
 
 
-def render_piece(position, piece_type):
+def render_piece(position, piece_type) -> None:
     row, col = position
     piece_key = f"{piece_type[0]}{piece_type[1]}"
     piece_image = images[piece_key]
     screen.blit(piece_image, (col * SQUARE_SIZE + OFFSET, row * SQUARE_SIZE + OFFSET))
 
 
-def find_king_position(color):
+def find_king_position(color) -> None:
     king_square = board.king(color)
     if king_square is not None:
         return chess.square_name(king_square)
     return None
 
 
-def is_in_check_or_checkmate():
+def is_in_check_or_checkmate() -> None:
     color = board.turn
     king_position = find_king_position(color)
 
@@ -79,7 +79,9 @@ def is_in_check_or_checkmate():
         else:
             print(f"King is safe at {king_position}")
     else:
-        print(f"King not found on the board.")
+        print(
+            f"King not found on the board."
+        )  # extremely rare scenario; not possible (i think)
 
 
 def render_board_from_fen(fen):
@@ -118,17 +120,56 @@ def highlight_legal_moves(screen, board, selected_square, SQUARE_SIZE, OFFSET):
             dest_square = move.to_square
             col = chess.square_file(dest_square)
             row = 7 - chess.square_rank(dest_square)
-            pygame.draw.circle(
+            pygame.draw.rect(
                 screen,
                 (50, 205, 50),
                 (
-                    col * SQUARE_SIZE + OFFSET + SQUARE_SIZE // 2,
-                    row * SQUARE_SIZE + OFFSET + SQUARE_SIZE // 2,
+                    col * SQUARE_SIZE + OFFSET,
+                    row * SQUARE_SIZE + OFFSET,
+                    SQUARE_SIZE,
+                    SQUARE_SIZE,
                 ),
-                SQUARE_SIZE * 0.3,
             )
 
     pygame.display.update()
+
+
+def check_promotion(move: chess.Move):
+    print(move.from_square, move.to_square)
+    if board.turn == chess.BLACK:
+        black_promotion_squares = [0, 1, 2, 3, 4, 5, 6, 7]
+        if (
+            board.piece_at(move.from_square) == chess.Piece(chess.PAWN, chess.BLACK)
+            and move.to_square in white_promotion_squares
+        ):
+            move.promotion = chess.QUEEN
+            return move
+        else:
+            return False
+    elif board.turn == chess.WHITE:
+        white_promotion_squares = [56, 57, 58, 59, 60, 61, 62, 63]
+        if (
+            board.piece_at(move.from_square) == chess.Piece(chess.PAWN, chess.WHITE)
+            and move.to_square in white_promotion_squares
+        ):
+            move.promotion = chess.QUEEN
+            return move
+        else:
+            return False
+
+
+def try_and_push_move(move) -> bool:
+    if (
+        check_promotion(move)
+        and check_promotion(move) in board.legal_moves
+    ):
+        board.push(check_promotion(move))
+    elif move in board.legal_moves:
+        board.push(move)
+        
+    draw_chessboard()
+    is_in_check_or_checkmate()
+    return True
 
 
 if __name__ == "__main__":

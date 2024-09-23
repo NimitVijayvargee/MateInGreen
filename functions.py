@@ -1,4 +1,4 @@
-import pygame, chess, sys
+import pygame, chess, sys, eval
 
 WIDTH, HEIGHT = 1000, 800
 ROWS, COLS = 8, 8
@@ -84,7 +84,7 @@ def is_in_check_or_checkmate() -> None:
         )  # extremely rare scenario; not possible (i think)
 
 
-def render_board_from_fen(fen):
+def render_board_from_fen(fen) -> None:
     piece_mapping = {
         "r": ("b", "r"),
         "n": ("b", "n"),
@@ -111,7 +111,7 @@ def render_board_from_fen(fen):
                 col_idx += 1
 
 
-def highlight_legal_moves(screen, board, selected_square, SQUARE_SIZE, OFFSET):
+def highlight_legal_moves(selected_square):
     legal_moves = board.legal_moves
     selected_piece_square = chess.square(selected_square[1], 7 - selected_square[0])
 
@@ -140,7 +140,7 @@ def check_promotion(move: chess.Move):
         black_promotion_squares = [0, 1, 2, 3, 4, 5, 6, 7]
         if (
             board.piece_at(move.from_square) == chess.Piece(chess.PAWN, chess.BLACK)
-            and move.to_square in white_promotion_squares
+            and move.to_square in black_promotion_squares
         ):
             move.promotion = chess.QUEEN
             return move
@@ -169,8 +169,11 @@ def try_and_push_move(move) -> bool:
         
     draw_chessboard()
     is_in_check_or_checkmate()
+    print(eval.eval_board(board))   
     return True
 
 
+
+
 if __name__ == "__main__":
-    import index
+    import index #just redirects you :p

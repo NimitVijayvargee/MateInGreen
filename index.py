@@ -1,4 +1,4 @@
-import pygame, sys, chess, math
+import pygame, sys, chess, math, eval
 import functions as f
 
 pygame.init()
@@ -14,7 +14,7 @@ f.draw_chessboard()
 while running:
     f.render_board_from_fen(f.board.fen())
     if f.board.turn == chess.BLACK:
-        move = next(iter(f.board.legal_moves))
+        move = eval.best_move(f.board)
         f.try_and_push_move(move)
 
     for event in pygame.event.get():
@@ -46,9 +46,7 @@ while running:
                                 f.SQUARE_SIZE,
                             ),
                         )
-                        f.highlight_legal_moves(
-                            f.screen, f.board, selected_square, f.SQUARE_SIZE, f.OFFSET
-                        )
+                        f.highlight_legal_moves(selected_square)
                     pygame.display.update()
                 else:
                     rank, file = selected_square

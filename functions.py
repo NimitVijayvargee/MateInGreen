@@ -9,7 +9,8 @@ BLACK = (119, 149, 86)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess Board")
 board = chess.Board()
-
+clock = pygame.time.Clock()
+clock.tick(60)
 
 def load_images():
     pieces = ["wp", "wr", "wn", "wb", "wq", "wk", "bp", "br", "bn", "bb", "bq", "bk"]
@@ -135,7 +136,6 @@ def highlight_legal_moves(selected_square):
 
 
 def check_promotion(move: chess.Move):
-    print(move.from_square, move.to_square)
     if board.turn == chess.BLACK:
         black_promotion_squares = [0, 1, 2, 3, 4, 5, 6, 7]
         if (
@@ -166,6 +166,8 @@ def try_and_push_move(move) -> bool:
         board.push(check_promotion(move))
     elif move in board.legal_moves:
         board.push(move)
+    else:
+        return False
         
     draw_chessboard()
     is_in_check_or_checkmate()

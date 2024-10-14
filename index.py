@@ -11,11 +11,15 @@ selected_square = (-1, -1)
 selected_piece = None
 running = True
 f.draw_chessboard()
+print(eval.maps)
+print(f.board.piece_map())
 while running:
     f.render_board_from_fen(f.board.fen())
     if f.board.turn == chess.BLACK:
-        move = eval.best_move(f.board)
-        f.try_and_push_move(move)
+        move = eval.minmax(f.board,3,False)
+        if f.try_and_push_move(move):
+            print("Black played the move ", move.uci())
+    
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -28,12 +32,7 @@ while running:
                 if selected_square == (-1, -1):
                     selected_square = (row, col)
                     selected_piece = f.board.piece_at(chess.square(col, 7 - row))
-                    if (
-                        (
-                            str(selected_piece).upper() == str(selected_piece)
-                            and f.board.turn == chess.WHITE
-                        )
-                    ) and selected_piece is not None:
+                    if selected_piece is not None and str(selected_piece).isupper() and f.board.turn == chess.WHITE:
                         print(f"Square: {chess.square(col,7-row)}")
                         print(f"Piece: {f.board.piece_at(chess.square(col,7-row))}")
                         pygame.draw.rect(

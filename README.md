@@ -12,7 +12,9 @@ Chess, in python! Credits to the chess library ([PyPi](https://pypi.org/project/
 
 ## Future features
 
- 1. Underpromotion (enjoy having only queens)
- 2. A bot that is actually hard to play against
- 3. Better UI with sounds and a move recording system
- 4. Exporting FEN and PGN from the game (sounds harder than it actually is tbh)
+ 1. Underpromotion through GUI
+ 2. Advanced evaluation system
+ 3. Web-based GUI for better styling and performance.
+ 4. Exporting FEN and PGN from the game
+ 5. Cloud based algorithm to speed up processes
+ 6. Undo, redo and hints

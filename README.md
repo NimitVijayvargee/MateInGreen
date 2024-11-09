@@ -8,7 +8,7 @@ Chess, in python! Credits to the chess library ([PyPi](https://pypi.org/project/
  2. Create a virtual environment <br> `python -m venv /path/to/the/code`
  3. Install the dependencies <br> `pip install chess` <br>  `pip install pygame`
  4. Run `index.py` using `python index.py` in the folder
- 5. Play chess against trashbot (it has a name now :O)
+ 5. Play chess against the bot.
 
 ## Future features
 

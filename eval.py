@@ -1,4 +1,4 @@
-import chess, pygame, random, requests, json
+import chess, pygame, random
 from copy import deepcopy
 
 scoring = {
@@ -94,35 +94,34 @@ def eval_board(BOARD: chess.Board) -> float:
 
     return score
 
-def minmax(BOARD: chess.Board, depth: int, is_maximizing: bool):
+def minmax(BOARD, depth, is_maximizing, alpha=float('-inf'), beta=float('inf')):
+    # Base case: if we've reached a depth limit or the game is over
     if depth == 0 or BOARD.is_game_over():
-        return eval_board(BOARD)
+        return eval_board(BOARD), None  # Evaluate board (you can define this evaluation function)
 
-    moves = list(BOARD.legal_moves)
-    best_move = None
-    
     if is_maximizing:
-        max_eval = -float('inf')
-        for move in moves:
-            temp = deepcopy(BOARD)
-            temp.push(move)
-            eval = minmax(temp, depth - 1, False)
-            if eval > max_eval:
-                max_eval = eval
-                best_move = move
-        if depth == 3:
-            return best_move
+        max_eval = (float('-inf'), None)
+        for move in BOARD.legal_moves:
+            temp_board = deepcopy(BOARD)
+            temp_board.push(move)
+            evaluation = minmax(temp_board, depth - 1, False, alpha, beta)
+            if evaluation[0] > max_eval[0]:
+                alpha = max(alpha, evaluation[0])
+            if beta <= alpha:
+                break
         return max_eval
-    
-    else:  # BLACK's turn (minimizing)
+
+    else:
         min_eval = float('inf')
-        for move in moves:
-            temp = deepcopy(BOARD)
-            temp.push(move)
-            eval = minmax(temp, depth - 1, True)
-            if eval < min_eval:
-                min_eval = eval
-                best_move = move
-        if depth == 3:  # Return move at top level
-            return best_move
+        legal_moves = BOARD.legal_moves
+        evaluations = {}
+        for move in legal_moves:
+            temp_board = deepcopy(BOARD)
+            temp_board.push(move)
+            evaluation = minmax(temp_board, depth - 1, True, alpha, beta)
+            if evaluation < min_eval:
+                min_eval = evaluation
+            beta = min(beta, evaluation)
+            if beta <= alpha:
+                break
         return min_eval

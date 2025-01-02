@@ -1,4 +1,4 @@
-import pygame, sys, chess, math, eval
+import pygame, sys, chess, math, eval, time
 import functions
 
 pygame.init()
@@ -16,7 +16,10 @@ print(functions.board.piece_map())
 while running:
     functions.render_board_from_fen(functions.board.fen())
     if functions.board.turn == chess.BLACK:
-        move = eval.minmax(functions.board,3,False)[1]
+        start = time.time()
+        _,move= eval.minmax(functions.board,3,False)
+        end = time.time()
+        print(f"Move made in {end-start} seconds.")
         print(type(move))
         if functions.try_and_push_move(move):
             print("Black played the move ", move.uci())

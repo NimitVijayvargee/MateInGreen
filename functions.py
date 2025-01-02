@@ -1,6 +1,6 @@
 import pygame, chess, sys, eval
 
-WIDTH, HEIGHT = 1000, 800
+WIDTH, HEIGHT = 800, 800
 ROWS, COLS = 8, 8
 SQUARE_SIZE = 80
 OFFSET = 80

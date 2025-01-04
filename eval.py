@@ -1,4 +1,3 @@
-import concurrent.futures
 import chess, pygame, random
 import concurrent
 from copy import deepcopy
@@ -9,13 +8,13 @@ scoring = {
     "b": -3,
     "r": -5,
     "q": -9,
-    "k": 0,
+    "k": -10000,
     "P": 1,
     "N": 3,
     "B": 3,
     "R": 5,
     "Q": 9,
-    "K": 0,
+    "K": 10000,
 }
 # Piece Definitions
 maps = {
@@ -434,20 +433,22 @@ def eval_board(BOARD: chess.Board) -> float:
     return score
 
 
-def minmax(BOARD: chess.Board, depth: int, is_maximizing: bool, alpha=float("-inf"), beta=float("inf")):
+def minmax(
+    BOARD: chess.Board,
+    depth: int,
+    is_maximizing: bool,
+    alpha=float("-inf"),
+    beta=float("inf"),
+):
     if depth == 0 or BOARD.is_game_over():
-        return (
-            eval_board(BOARD),
-            None
-        )
-
+        return eval_board(BOARD), BOARD.is_stalemate() | BOARD.is_checkmate()
     if is_maximizing:
         max_eval = float("-inf")
         legal_moves = BOARD.legal_moves
         evaluations = {}
         good_moves = []
-
         for move in legal_moves:
+
             temp_board = deepcopy(BOARD)
             temp_board.push(move)
             evaluation, _ = minmax(temp_board, depth - 1, False, alpha, beta)
@@ -460,10 +461,7 @@ def minmax(BOARD: chess.Board, depth: int, is_maximizing: bool, alpha=float("-in
         for move in evaluations.keys():
             if evaluations[move] == max_eval:
                 good_moves.append(move)
-        return (
-            max_eval,
-            random.choice(good_moves)
-        )
+        return max_eval, random.choice(good_moves)
 
     else:
         min_eval = float("inf")
@@ -483,7 +481,4 @@ def minmax(BOARD: chess.Board, depth: int, is_maximizing: bool, alpha=float("-in
         for move in evaluations.keys():
             if evaluations[move] == min_eval:
                 good_moves.append(move)
-        return (
-            min_eval,
-            random.choice(good_moves)
-        )
+        return min_eval, random.choice(good_moves)

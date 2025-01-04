@@ -1,3 +1,4 @@
+import random
 import pygame, chess, sys, eval
 
 WIDTH, HEIGHT = 800, 800
@@ -11,6 +12,14 @@ pygame.display.set_caption("Chess Board")
 board = chess.Board()
 clock = pygame.time.Clock()
 clock.tick(60)
+PLAYER_COL = WHITE
+#PLAYER_COL = random.choice([WHITE, BLACK])
+
+if PLAYER_COL is WHITE:
+    BOT_COL = BLACK
+else:
+    BOT_COL = WHITE
+
 
 def load_images():
     pieces = ["wp", "wr", "wn", "wb", "wq", "wk", "bp", "br", "bn", "bb", "bq", "bk"]
@@ -28,7 +37,7 @@ def draw_chessboard() -> None:
     pygame.draw.rect(screen, BLACK, (70, 70, 660, 660))
     for row in range(ROWS):
         for col in range(COLS):
-            color = WHITE if (row + col) % 2 == 0 else BLACK
+            color = PLAYER_COL if (row + col) % 2 == 0 else BOT_COL
             pygame.draw.rect(
                 screen,
                 color,
@@ -108,8 +117,12 @@ def render_board_from_fen(fen) -> None:
             if char.isdigit():
                 col_idx += int(char)
             else:
-                render_piece((row_idx, col_idx), piece_mapping[char])
-                col_idx += 1
+                if PLAYER_COL is BLACK:
+                    render_piece((7 - row_idx, 7 - col_idx), piece_mapping[char])
+                    col_idx += 1
+                if PLAYER_COL is WHITE:
+                    render_piece((row_idx, col_idx), piece_mapping[char])
+                    col_idx += 1
 
 
 def highlight_legal_moves(selected_square):
@@ -159,23 +172,18 @@ def check_promotion(move: chess.Move):
 
 
 def try_and_push_move(move) -> bool:
-    if (
-        check_promotion(move)
-        and check_promotion(move) in board.legal_moves
-    ):
+    if check_promotion(move) and check_promotion(move) in board.legal_moves:
         board.push(check_promotion(move))
     elif move in board.legal_moves:
         board.push(move)
     else:
         return False
-        
+
     draw_chessboard()
     is_in_check_or_checkmate()
-    print(eval.eval_board(board))   
+    print(eval.eval_board(board))
     return True
 
 
-
-
 if __name__ == "__main__":
-    import index #just redirects you :p
+    import index  # just redirects you :p
